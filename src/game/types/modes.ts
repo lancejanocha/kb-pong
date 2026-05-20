@@ -1,5 +1,5 @@
-/** The three playable game modes */
-export type GameMode = 'pong-solo' | 'pong-versus' | 'breakout';
+/** The playable game modes */
+export type GameMode = 'pong-solo' | 'pong-versus' | 'pong-online' | 'breakout';
 
 /** Player position identifiers */
 export type PlayerId = 'left' | 'right' | 'solo';

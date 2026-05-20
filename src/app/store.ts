@@ -1,8 +1,9 @@
 import { create } from 'zustand';
 import type { GameMode, PlayerId, AIDifficultyPreset } from '../game/types/modes';
+import type { BallSpeedPreset, PaddleSizePreset, SpeedIncreasePreset, BrickDensityPreset } from '../game/rules/physics-config';
 import { validateWinScore } from '../game/rules/win-score';
 
-export type AppPhase = 'menu' | 'settings' | 'playing';
+export type AppPhase = 'menu' | 'settings' | 'online-lobby' | 'playing';
 
 export interface MatchData {
   scores: { left: number; right: number };
@@ -27,6 +28,11 @@ export interface AppState {
   winScore: number;
   aiDifficulty: AIDifficultyPreset;
   powerupsEnabled: boolean;
+  ballSpeed: BallSpeedPreset;
+  paddleSize: PaddleSizePreset;
+  speedIncrease: SpeedIncreasePreset;
+  brickDensity: BrickDensityPreset;
+  startingLives: 1 | 3 | 5;
 
   // Overlays
   pauseOverlayOpen: boolean;
@@ -59,12 +65,20 @@ export const useAppStore = create<AppState>((set) => ({
   winScore: 7,
   aiDifficulty: 'normal',
   powerupsEnabled: false,
+  ballSpeed: 'normal',
+  paddleSize: 'normal',
+  speedIncrease: 'gentle',
+  brickDensity: 'normal',
+  startingLives: 3,
   pauseOverlayOpen: false,
   winLossOverlayOpen: false,
   matchData: { ...INITIAL_MATCH_DATA },
 
   // Actions
-  selectMode: (mode) => set({ selectedMode: mode, phase: 'settings' }),
+  selectMode: (mode) => set({
+    selectedMode: mode,
+    phase: mode === 'pong-online' ? 'online-lobby' : 'settings',
+  }),
 
   goToMenu: () => set({
     phase: 'menu',

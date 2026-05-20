@@ -1,10 +1,12 @@
 import Phaser from 'phaser';
-import PlaceholderScene from './scenes/PlaceholderScene';
+import PongScene from './scenes/PongScene';
+import BreakoutScene from './scenes/BreakoutScene';
 import type { SceneLaunchPayload } from './types/payload';
 
 export function createGameConfig(
-  _payload: SceneLaunchPayload,
+  payload: SceneLaunchPayload,
 ): Phaser.Types.Core.GameConfig {
+  const scene = payload.settings.mode === 'breakout' ? [BreakoutScene] : [PongScene];
   return {
     type: Phaser.AUTO,
     width: 800,
@@ -19,6 +21,6 @@ export function createGameConfig(
         target: window,
       },
     },
-    scene: [PlaceholderScene],
+    scene,
   };
 }

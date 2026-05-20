@@ -9,55 +9,58 @@ import { setLaunchPayload } from '../game/systems/SceneLauncher';
 import type { PlayerId } from '../game/types/modes';
 import type { MatchSettings } from '../game/types/settings';
 import type { SceneLaunchPayload } from '../game/types/payload';
+import type { NetworkManager } from '../game/systems/NetworkManager';
+import type { PlayerRole } from '../game/types/network';
+
+interface GameViewProps {
+  networkInfo?: { manager: NetworkManager; role: PlayerRole } | null;
+}
 
 function buildMatchSettings(): MatchSettings {
   const state = useAppStore.getState();
+  const base = {
+    powerupsEnabled: state.powerupsEnabled,
+    ballSpeed: state.ballSpeed,
+    paddleSize: state.paddleSize,
+  } as const;
 
   switch (state.selectedMode) {
     case 'pong-solo':
-      return {
-        mode: 'pong-solo',
-        winScore: state.winScore,
-        aiDifficulty: state.aiDifficulty,
-        powerupsEnabled: state.powerupsEnabled,
-      };
+      return { ...base, mode: 'pong-solo', winScore: state.winScore, aiDifficulty: state.aiDifficulty, speedIncrease: state.speedIncrease };
     case 'pong-versus':
-      return {
-        mode: 'pong-versus',
-        winScore: state.winScore,
-        powerupsEnabled: state.powerupsEnabled,
-      };
+      return { ...base, mode: 'pong-versus', winScore: state.winScore, speedIncrease: state.speedIncrease };
+    case 'pong-online':
+      return { ...base, mode: 'pong-online', winScore: state.winScore, speedIncrease: state.speedIncrease };
     case 'breakout':
-      return {
-        mode: 'breakout',
-        powerupsEnabled: state.powerupsEnabled,
-      };
+      return { ...base, mode: 'breakout', startingLives: state.startingLives, brickDensity: state.brickDensity };
     default:
-      return {
-        mode: 'pong-solo',
-        winScore: state.winScore,
-        aiDifficulty: state.aiDifficulty,
-        powerupsEnabled: state.powerupsEnabled,
-      };
+      return { ...base, mode: 'pong-solo', winScore: state.winScore, aiDifficulty: state.aiDifficulty, speedIncrease: state.speedIncrease };
   }
 }
 
-function buildSceneLaunchPayload(): SceneLaunchPayload {
+function buildSceneLaunchPayload(networkInfo?: GameViewProps['networkInfo']): SceneLaunchPayload {
   const settings = buildMatchSettings();
 
-  if (settings.mode === 'pong-versus') {
-    return { settings, players: ['left', 'right'] };
-  }
+  const base: SceneLaunchPayload = (() => {
+    if (settings.mode === 'pong-versus' || settings.mode === 'pong-online') {
+      return { settings, players: ['left', 'right'] as const };
+    }
+    if (settings.mode === 'breakout') {
+      return { settings, players: ['solo'] as const };
+    }
+    return { settings, players: ['left', 'right'] as const };
+  })();
 
-  if (settings.mode === 'breakout') {
-    return { settings, players: ['solo'] };
+  if (networkInfo) {
+    return { ...base, network: { role: networkInfo.role, manager: networkInfo.manager } };
   }
-
-  return { settings, players: ['left', 'right'] };
+  return base;
 }
 
-function GameView(): React.JSX.Element {
-  const launchPayload = buildSceneLaunchPayload();
+function GameView({ networkInfo }: GameViewProps): React.JSX.Element {
+  const launchPayload = buildSceneLaunchPayload(networkInfo);
+  // Set payload synchronously BEFORE Phaser game is created (per architecture steering)
+  setLaunchPayload(launchPayload);
   const gameConfig = createGameConfig(launchPayload);
 
   useEffect(() => {
@@ -91,8 +94,10 @@ function GameView(): React.JSX.Element {
   }, []);
 
   useEffect(() => {
+    const isOnline = useAppStore.getState().selectedMode === 'pong-online';
     const handleKeyDown = (e: KeyboardEvent): void => {
       if (e.key === 'Escape') {
+        if (isOnline) return; // No pause in online mode
         e.preventDefault();
         const state = useAppStore.getState();
         if (!state.pauseOverlayOpen) {
@@ -110,10 +115,6 @@ function GameView(): React.JSX.Element {
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
-
-  useEffect(() => {
-    setLaunchPayload(launchPayload);
-  }, [launchPayload]);
 
   return (
     <>

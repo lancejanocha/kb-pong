@@ -39,9 +39,10 @@ describe('ModeSelectionScreen', () => {
   it('all buttons have accessible text content', () => {
     render(<ModeSelectionScreen />);
     const buttons = screen.getAllByRole('button');
-    expect(buttons).toHaveLength(3);
+    expect(buttons).toHaveLength(4);
     expect(buttons[0].textContent).toBe('Pong: Solo');
     expect(buttons[1].textContent).toBe('Pong: Versus');
-    expect(buttons[2].textContent).toBe('Breakout');
+    expect(buttons[2].textContent).toBe('Pong: Online');
+    expect(buttons[3].textContent).toBe('Breakout');
   });
 });

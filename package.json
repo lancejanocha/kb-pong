@@ -15,6 +15,7 @@
     "phaser": "3.90.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
+    "ws": "8.20.1",
     "zustand": "5.0.13"
   },
   "devDependencies": {

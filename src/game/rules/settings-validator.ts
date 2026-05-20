@@ -59,6 +59,9 @@ export function validateSettings(input: unknown): ValidationResult {
           winScore: validateWinScore(obj.winScore as number),
           aiDifficulty: obj.aiDifficulty as 'easy' | 'normal' | 'hard',
           powerupsEnabled,
+          ballSpeed: (obj.ballSpeed as 'slow' | 'normal' | 'fast') ?? 'normal',
+          paddleSize: (obj.paddleSize as 'small' | 'normal' | 'large') ?? 'normal',
+          speedIncrease: (obj.speedIncrease as 'off' | 'gentle' | 'aggressive') ?? 'gentle',
         },
       };
     }
@@ -74,6 +77,9 @@ export function validateSettings(input: unknown): ValidationResult {
           mode: 'pong-versus',
           winScore: validateWinScore(obj.winScore as number),
           powerupsEnabled,
+          ballSpeed: (obj.ballSpeed as 'slow' | 'normal' | 'fast') ?? 'normal',
+          paddleSize: (obj.paddleSize as 'small' | 'normal' | 'large') ?? 'normal',
+          speedIncrease: (obj.speedIncrease as 'off' | 'gentle' | 'aggressive') ?? 'gentle',
         },
       };
     }
@@ -84,6 +90,10 @@ export function validateSettings(input: unknown): ValidationResult {
         settings: {
           mode: 'breakout',
           powerupsEnabled,
+          ballSpeed: (obj.ballSpeed as 'slow' | 'normal' | 'fast') ?? 'normal',
+          paddleSize: (obj.paddleSize as 'small' | 'normal' | 'large') ?? 'normal',
+          startingLives: (obj.startingLives as 1 | 3 | 5) ?? 3,
+          brickDensity: (obj.brickDensity as 'sparse' | 'normal' | 'dense') ?? 'normal',
         },
       };
     }

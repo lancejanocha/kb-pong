@@ -18,6 +18,9 @@ function ModeSelectionScreen(): React.JSX.Element {
         <button className="mode-card" onClick={() => handleSelect('pong-versus')}>
           Pong: Versus
         </button>
+        <button className="mode-card" onClick={() => handleSelect('pong-online')}>
+          Pong: Online
+        </button>
         <button className="mode-card" onClick={() => handleSelect('breakout')}>
           Breakout
         </button>

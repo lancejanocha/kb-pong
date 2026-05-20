@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: paddle-arcade
+    runtime: node
+    buildCommand: npm install && npm run build
+    startCommand: node server/main.cjs
+    healthCheckPath: /health
