@@ -255,10 +255,10 @@ export default class PongScene extends Phaser.Scene {
         this.leftPaddle.setVelocityY(0);
       }
     } else {
-      // Host controls left paddle with W/S
-      if (this.keys['w'] || this.keys['W']) {
+      // Host controls left paddle with W/S or Arrows
+      if (this.keys['w'] || this.keys['W'] || this.keys['ArrowUp']) {
         this.leftPaddle.setVelocityY(-PADDLE_SPEED);
-      } else if (this.keys['s'] || this.keys['S']) {
+      } else if (this.keys['s'] || this.keys['S'] || this.keys['ArrowDown']) {
         this.leftPaddle.setVelocityY(PADDLE_SPEED);
       } else {
         this.leftPaddle.setVelocityY(0);
@@ -339,8 +339,8 @@ export default class PongScene extends Phaser.Scene {
   private sendGuestInput(): void {
     if (this.networkRole !== 'guest' || !this.networkManager) return;
     let direction: -1 | 0 | 1 = 0;
-    if (this.keys['ArrowUp']) direction = -1;
-    else if (this.keys['ArrowDown']) direction = 1;
+    if (this.keys['ArrowUp'] || this.keys['w'] || this.keys['W']) direction = -1;
+    else if (this.keys['ArrowDown'] || this.keys['s'] || this.keys['S']) direction = 1;
     this.networkManager.sendInput({ direction, timestamp: Date.now() });
   }
 
